@@ -1,0 +1,49 @@
+body {
+  margin: 0;
+  padding-top: 70px;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+a {
+  text-decoration: none;
+}
+
+.card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.btn {
+  border-radius: 12px;
+}
+
+.form-control {
+  border-radius: 12px;
+}
+
+.container {
+  max-width: 1180px;
+}
+
+/* Offcanvas slide animation override (global) */
+#cartOffcanvas.offcanvas-end {
+  transform: translateX(100%) !important;
+  transition: transform 0.45s ease-in-out !important;
+  will-change: transform;
+  visibility: hidden;
+}
+#cartOffcanvas.offcanvas-end.show,
+#cartOffcanvas.offcanvas-end.showing,
+#cartOffcanvas.offcanvas-end.hiding {
+  visibility: visible;
+}
+#cartOffcanvas.offcanvas-end.show,
+#cartOffcanvas.offcanvas-end.showing {
+  transform: translateX(0) !important;
+}
+#cartOffcanvas.offcanvas-end.hiding {
+  transform: translateX(100%) !important;
+}

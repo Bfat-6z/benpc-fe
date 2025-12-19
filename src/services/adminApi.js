@@ -20,6 +20,10 @@ export const updateUserStatus = async (userId, newStatus) => {
   return put(`/admin/nguoi-dung/${userId}/status`, { trangThai: newStatus })
 }
 
+export const deleteUser = async (userId) => {
+  return del(`/admin/nguoi-dung/${userId}`)
+}
+
 // ========== PRODUCT MANAGEMENT ==========
 export const fetchAllProducts = async (params = {}) => {
   const queryParams = new URLSearchParams()

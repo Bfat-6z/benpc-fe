@@ -1,20 +1,38 @@
 <template>
-  <div class="bg-light min-vh-100 d-flex align-items-center py-5">
+  <div class="auth-page">
     <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
-          <div class="card shadow-lg border-0">
-            <div class="card-body p-5">
-              <div class="text-center mb-4">
-                <h2 class="fw-bold text-danger mb-2">
-                  <i class="bi bi-person-circle me-2"></i>Đăng nhập
-                </h2>
-                <p class="text-muted">Chào mừng bạn quay trở lại AGM Store</p>
-              </div>
+      <div class="row align-items-center g-4">
+        <div class="col-lg-6 hero-col">
+          <div class="eyebrow">AGM Store · Sign in</div>
+          <h1 class="hero-title">
+            Truy cập nhanh
+            <span class="highlight">kho linh kiện cao cấp</span>
+          </h1>
+          <p class="hero-sub">
+            Đăng nhập để đồng bộ giỏ hàng, theo dõi đơn hàng và nhận ưu đãi dành riêng cho bạn.
+          </p>
+          <div class="hero-pills d-flex flex-wrap">
+            <span class="pill"><i class="bi bi-shield-lock"></i> Bảo mật OAuth</span>
+            <span class="pill"><i class="bi bi-graph-up-arrow"></i> Ưu đãi thành viên</span>
+            <span class="pill"><i class="bi bi-box-seam"></i> Theo dõi đơn realtime</span>
+          </div>
+        </div>
 
-              <form @submit.prevent="handleLogin">
-                <div class="mb-3">
-                  <label for="email" class="form-label">Email</label>
+        <div class="col-lg-6">
+          <div class="glass-card">
+            <div class="card-header-modern">
+              <div class="icon-circle"><i class="bi bi-person-circle"></i></div>
+              <div>
+                <p class="tiny-label">Đăng nhập</p>
+                <h3 class="card-title">Chào mừng trở lại</h3>
+              </div>
+            </div>
+
+            <form class="modern-form" @submit.prevent="handleLogin">
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <div class="input-shell">
+                  <i class="bi bi-envelope"></i>
                   <input
                     id="email"
                     v-model="formData.email"
@@ -24,82 +42,79 @@
                     required
                   />
                 </div>
+              </div>
 
-                <div class="mb-3">
-                  <label for="password" class="form-label">Mật khẩu</label>
-                  <div class="position-relative">
-                    <input
-                      id="password"
-                      v-model="formData.password"
-                      :type="showPassword ? 'text' : 'password'"
-                      class="form-control"
-                      placeholder="Nhập mật khẩu"
-                      required
-                    />
-                    <button
-                      type="button"
-                      class="btn btn-link position-absolute end-0 top-50 translate-middle-y pe-3"
-                      @click="showPassword = !showPassword"
-                      style="border: none; background: none; color: #6c757d"
-                    >
-                      <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
-                    </button>
-                  </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Mật khẩu</label>
+                <div class="input-shell password-shell">
+                  <i class="bi bi-lock"></i>
+                  <input
+                    id="password"
+                    v-model="formData.password"
+                    :type="showPassword ? 'text' : 'password'"
+                    class="form-control"
+                    placeholder="Nhập mật khẩu"
+                    required
+                  />
+                  <button
+                    type="button"
+                    class="ghost-btn"
+                    @click="showPassword = !showPassword"
+                  >
+                    <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                  </button>
                 </div>
+              </div>
 
-                <div class="mb-3 form-check">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <label class="d-flex align-items-center gap-2 form-check m-0">
                   <input
                     id="remember"
                     v-model="formData.remember"
                     type="checkbox"
                     class="form-check-input"
                   />
-                  <label class="form-check-label" for="remember"> Ghi nhớ đăng nhập </label>
-                </div>
+                  <span>Ghi nhớ đăng nhập</span>
+                </label>
+                <a href="#" class="link-accent small">Quên mật khẩu?</a>
+              </div>
 
-                <div v-if="error" class="alert alert-danger" role="alert">
-                  <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
-                </div>
+              <div v-if="error" class="alert alert-danger modern-alert" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+              </div>
 
-                <button class="btn btn-danger w-100 btn-lg mb-3" type="submit" :disabled="loading">
-                  <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
-                  <i v-else class="bi bi-box-arrow-in-right me-2"></i>
-                  Đăng nhập
-                </button>
+              <button class="primary-btn w-100 mb-3" type="submit" :disabled="loading">
+                <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+                <i v-else class="bi bi-box-arrow-in-right me-2"></i>
+                Đăng nhập
+              </button>
 
-                <div class="text-center mb-3">
-                  <a href="#" class="text-decoration-none text-muted small">Quên mật khẩu?</a>
-                </div>
+              <div class="divider d-flex align-items-center my-3">
+                <div class="flex-grow-1 border-top"></div>
+                <span class="px-3 text-muted small">Hoặc</span>
+                <div class="flex-grow-1 border-top"></div>
+              </div>
 
-                <div class="divider d-flex align-items-center my-4">
-                  <div class="flex-grow-1 border-top"></div>
-                  <span class="px-3 text-muted small">Hoặc</span>
-                  <div class="flex-grow-1 border-top"></div>
-                </div>
+              <div id="google-signin-button" class="mb-3"></div>
+              
+              <div v-if="!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID_HERE'" class="alert alert-warning small modern-alert warn">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Vui lòng cấu hình Google Client ID. Xem file GOOGLE_OAUTH_SETUP.md để biết chi tiết.
+              </div>
 
-                <div id="google-signin-button" class="mb-3"></div>
-                
-                <div v-if="!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID === 'YOUR_GOOGLE_CLIENT_ID_HERE'" class="alert alert-warning small">
-                  <i class="bi bi-exclamation-triangle me-2"></i>
-                  Vui lòng cấu hình Google Client ID. Xem file GOOGLE_OAUTH_SETUP.md để biết chi tiết.
-                </div>
-
-                <hr class="my-4" />
-
-                <div class="text-center">
-                  <p class="text-muted mb-0">
-                    Chưa có tài khoản?
-                    <RouterLink to="/register" class="text-danger text-decoration-none fw-semibold">
-                      Đăng ký ngay
-                    </RouterLink>
-                  </p>
-                </div>
-              </form>
-            </div>
+              <div class="text-center">
+                <p class="text-muted mb-0">
+                  Chưa có tài khoản?
+                  <RouterLink to="/register" class="link-accent">
+                    Đăng ký ngay
+                  </RouterLink>
+                </p>
+              </div>
+            </form>
           </div>
 
           <div class="text-center mt-3">
-            <RouterLink to="/" class="text-decoration-none text-muted">
+            <RouterLink to="/" class="link-muted">
               <i class="bi bi-arrow-left me-1"></i>Quay lại trang chủ
             </RouterLink>
           </div>
@@ -136,42 +151,58 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '121345999016-
 const getUserRole = (user) => {
   if (!user) return 'user'
   
-  // Ưu tiên: quyen.TenQuyen (từ bảng Quyen) > vaiTro > role > maQuyen
-  // Vì backend dùng MaQuyen và bảng Quyen với TenQuyen
+  // Ưu tiên: tenQuyen (có thể ở user.tenQuyen hoặc user.quyen.tenQuyen) > vaiTro > role
   const possibleRoles = [
-    user.quyen?.tenQuyen,  // Ưu tiên cao nhất - tên quyền từ bảng Quyen
+    user.tenQuyen,         // Tên quyền trực tiếp trên user object (backend có thể trả về đây)
+    user.quyen?.tenQuyen,  // Tên quyền từ object quyen (ADMIN / STAFF / USER ...)
     user.quyen?.vaiTro,    // Nếu có trong object quyen
     user.vaiTro,           // Field vaiTro trực tiếp
-    user.role,             // Field role
-    user.maQuyen,          // ID quyền (sẽ cần map nếu là số)
+    user.role,             // Field role tự do
   ]
   
-  // Tìm role đầu tiên có giá trị
+  // Tìm role đầu tiên có giá trị dạng chuỗi
   let role = null
   for (const r of possibleRoles) {
-    if (r !== null && r !== undefined && r !== '') {
-      role = String(r).trim()
+    if (typeof r === 'string' && r.trim() !== '') {
+      role = r.trim()
       break
     }
   }
   
   if (!role) return 'user'
   
-  // Normalize role về lowercase để so sánh
-  const normalizedRole = role.toLowerCase()
+  // Chuẩn hóa: lowercase + bỏ dấu tiếng Việt để so sánh an toàn
+  const raw = role.toLowerCase().trim()
+  const ascii = raw.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   
-  // Map các giá trị có thể có về role chuẩn
-  // Xử lý cả số (MaQuyen) nếu backend trả về ID
-  if (normalizedRole === 'admin' || normalizedRole === 'administrator' || normalizedRole === '1') {
+  // Map các giá trị có thể có về role chuẩn (admin / staff / user) CHỈ dựa trên chuỗi tên
+  if (ascii.includes('admin') || ascii.includes('quantri') || ascii.includes('quan_tri')) {
     return 'admin'
   }
-  if (normalizedRole === 'nhanvien' || normalizedRole === 'nhan_vien' || normalizedRole === 'staff' || normalizedRole === 'employee' || normalizedRole === '2') {
+  if (
+    ascii.includes('nhanvien') ||
+    ascii.includes('nhan vien') ||
+    ascii.includes('nhan_vien') ||
+    ascii.includes('staff') ||
+    ascii.includes('employee')
+  ) {
     return 'nhanVien'
   }
-  if (normalizedRole === 'user' || normalizedRole === '3' || normalizedRole === '0') {
+  if (
+    ascii.includes('user') ||
+    ascii.includes('khach') ||
+    ascii.includes('khachhang') ||
+    ascii.includes('khach_hang') ||
+    ascii.includes('customer')
+  ) {
     return 'user'
   }
   
+  // Nếu không match gì, mặc định là user (khách hàng)
+  // Fallback cuối: dùng maQuyen nếu backend chỉ trả ID
+  const maQuyen = user.maQuyen || user.quyen?.maQuyen
+  if (maQuyen === 1 || maQuyen === '1') return 'admin'
+  if (maQuyen === 2 || maQuyen === '2') return 'nhanVien'
   return 'user'
 }
 
@@ -366,34 +397,274 @@ const deleteCookie = (name) => {
 </script>
 
 <style scoped>
-.card {
-  border-radius: 15px;
+.auth-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at 15% 20%, rgba(230, 244, 255, 0.5), transparent 25%),
+    radial-gradient(circle at 85% 0%, rgba(255, 231, 231, 0.5), transparent 22%),
+    linear-gradient(135deg, #f8fafc 0%, #f5f7fa 70%, #eef2f7 100%);
+  display: flex;
+  align-items: center;
+  padding: 64px 0;
 }
 
-.form-control:focus {
-  border-color: #dc3545;
-  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+.hero-col {
+  animation: fadeUp 0.6s ease 0.1s both;
 }
 
-.btn-danger {
-  border-radius: 8px;
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  background: #fff;
+  color: #e63946;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(230, 57, 70, 0.15);
+}
+
+.hero-title {
+  font-size: 38px;
+  line-height: 1.2;
+  margin: 18px 0 12px;
+  font-weight: 700;
+  color: #121826;
+}
+
+.highlight {
+  color: #e63946;
+}
+
+.hero-sub {
+  color: #5f6b7a;
+  max-width: 520px;
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.hero-pills {
+  gap: 10px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: #fff;
+  color: #1f2937;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 30px 80px rgba(17, 24, 39, 0.08), 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  animation: fadeUp 0.7s ease 0.2s both;
+}
+
+.card-header-modern {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.icon-circle {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffe9ec, #fff);
+  color: #e63946;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  box-shadow: 0 10px 30px rgba(230, 57, 70, 0.18);
+}
+
+.tiny-label {
+  text-transform: uppercase;
+  color: #9ca3af;
+  letter-spacing: 0.5px;
+  font-size: 12px;
+  margin: 0;
+}
+
+.card-title {
+  margin: 2px 0 0;
+  color: #111827;
+  font-weight: 700;
+}
+
+.modern-form {
+  margin-top: 10px;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 6px;
+}
+
+.input-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  transition: all 0.25s ease;
+}
+
+.input-shell i {
+  color: #9ca3af;
+  font-size: 16px;
+}
+
+.input-shell:focus-within {
+  background: #fff;
+  border-color: rgba(230, 57, 70, 0.45);
+  box-shadow: 0 8px 26px rgba(230, 57, 70, 0.12);
+}
+
+.input-shell .form-control {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-weight: 600;
+  color: #111827;
+  box-shadow: none;
+}
+
+.input-shell .form-control::placeholder {
+  color: #b5becd;
+  font-weight: 500;
+}
+
+.password-shell {
+  padding-right: 10px;
+}
+
+.ghost-btn {
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  padding: 6px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.ghost-btn:hover {
+  color: #e63946;
+  background: rgba(230, 57, 70, 0.07);
+}
+
+.modern-alert {
+  border-radius: 12px;
+  border: none;
+  padding: 12px 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  background: #fff6f6;
+  color: #c53030;
+}
+
+.modern-alert.warn {
+  background: #fff8eb;
+  color: #b45309;
+}
+
+.primary-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #f25561, #e63946);
+  color: #fff;
+  box-shadow: 0 16px 32px rgba(230, 57, 70, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.25s ease, filter 0.2s ease;
+}
+
+.primary-btn:hover:not(:disabled) {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 18px 36px rgba(230, 57, 70, 0.45);
+  filter: brightness(1.03);
+}
+
+.primary-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 10px 24px rgba(230, 57, 70, 0.3);
+}
+
+.primary-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.link-accent {
+  color: #e63946;
+  font-weight: 700;
+  text-decoration: none;
+  position: relative;
+}
+
+.link-accent::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(226, 57, 70, 0.8), rgba(242, 85, 97, 0.5));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+
+.link-accent:hover::after {
+  transform: scaleX(1);
+}
+
+.link-muted {
+  color: #6b7280;
+  text-decoration: none;
   font-weight: 600;
 }
 
-.btn-danger:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-  transition: all 0.3s ease;
-}
-
-.btn-outline-danger:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
-  transition: all 0.3s ease;
+.link-muted:hover {
+  color: #111827;
 }
 
 .divider {
   color: #6c757d;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 991px) {
+  .auth-page {
+    padding: 40px 0 56px;
+  }
+
+  .hero-title {
+    font-size: 32px;
+  }
 }
 </style>
 

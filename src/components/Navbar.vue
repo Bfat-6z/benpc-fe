@@ -176,42 +176,66 @@ const loadCurrentUser = () => {
 const getUserRole = (user) => {
   if (!user) return 'user'
   
-  // Ưu tiên: quyen.TenQuyen (từ bảng Quyen) > vaiTro > role > maQuyen
-  // Vì backend dùng MaQuyen và bảng Quyen với TenQuyen
+  // Nếu vaiTro đã được normalize (từ LoginView), ưu tiên dùng trực tiếp
+  // Vì LoginView đã normalize và lưu vào localStorage với vaiTro = 'admin' | 'nhanVien' | 'user'
+  if (user.vaiTro && typeof user.vaiTro === 'string') {
+    const normalizedVaiTro = user.vaiTro.toLowerCase().trim()
+    if (normalizedVaiTro === 'admin' || normalizedVaiTro === 'nhanvien' || normalizedVaiTro === 'user') {
+      return normalizedVaiTro === 'nhanvien' ? 'nhanVien' : normalizedVaiTro
+    }
+  }
+  
+  // Nếu vaiTro chưa normalize, check các nguồn khác
   const possibleRoles = [
-    user.quyen?.tenQuyen,  // Ưu tiên cao nhất - tên quyền từ bảng Quyen
+    user.tenQuyen,         // Tên quyền trực tiếp trên user object (backend có thể trả về đây)
+    user.quyen?.tenQuyen,  // Tên quyền từ object quyen (ADMIN / STAFF / USER ...)
     user.quyen?.vaiTro,    // Nếu có trong object quyen
-    user.vaiTro,           // Field vaiTro trực tiếp
-    user.role,             // Field role
-    user.maQuyen,          // ID quyền (sẽ cần map nếu là số)
+    user.role,             // Field role tự do
   ]
   
-  // Tìm role đầu tiên có giá trị
+  // Tìm role đầu tiên có giá trị dạng chuỗi
   let role = null
   for (const r of possibleRoles) {
-    if (r !== null && r !== undefined && r !== '') {
-      role = String(r).trim()
+    if (typeof r === 'string' && r.trim() !== '') {
+      role = r.trim()
       break
     }
   }
   
   if (!role) return 'user'
   
-  // Normalize role về lowercase để so sánh
-  const normalizedRole = role.toLowerCase()
+  // Chuẩn hóa: lowercase + bỏ dấu tiếng Việt để so sánh an toàn
+  const raw = role.toLowerCase().trim()
+  const ascii = raw.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   
-  // Map các giá trị có thể có về role chuẩn
-  // Xử lý cả số (MaQuyen) nếu backend trả về ID
-  if (normalizedRole === 'admin' || normalizedRole === 'administrator' || normalizedRole === '1') {
+  // Map các giá trị có thể có về role chuẩn (admin / staff / user) CHỈ dựa trên chuỗi tên
+  if (ascii.includes('admin') || ascii.includes('quantri') || ascii.includes('quan_tri')) {
     return 'admin'
   }
-  if (normalizedRole === 'nhanvien' || normalizedRole === 'nhan_vien' || normalizedRole === 'staff' || normalizedRole === 'employee' || normalizedRole === '2') {
+  if (
+    ascii.includes('nhanvien') ||
+    ascii.includes('nhan vien') ||
+    ascii.includes('nhan_vien') ||
+    ascii.includes('staff') ||
+    ascii.includes('employee')
+  ) {
     return 'nhanVien'
   }
-  if (normalizedRole === 'user' || normalizedRole === '3' || normalizedRole === '0') {
+  if (
+    ascii.includes('user') ||
+    ascii.includes('khach') ||
+    ascii.includes('khachhang') ||
+    ascii.includes('khach_hang') ||
+    ascii.includes('customer')
+  ) {
     return 'user'
   }
   
+  // Nếu không match gì, mặc định là user (khách hàng)
+  // Fallback cuối: dùng maQuyen nếu backend chỉ trả ID
+  const maQuyen = user.maQuyen || user.quyen?.maQuyen
+  if (maQuyen === 1 || maQuyen === '1') return 'admin'
+  if (maQuyen === 2 || maQuyen === '2') return 'nhanVien'
   return 'user'
 }
 

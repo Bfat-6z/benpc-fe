@@ -1,224 +1,260 @@
 <template>
-  <div class="bg-white">
-    <div class="container py-4">
-      <div class="row g-4">
+  <div class="checkout-page">
+    <div class="container">
+      <div class="row g-4 align-items-start">
         <!-- =================== FORM =================== -->
         <div class="col-lg-7">
-          <h4 class="mb-3">Thông tin liên hệ</h4>
+          <div class="section-head d-flex align-items-center gap-3 mb-3">
+            <div class="icon-circle"><i class="bi bi-clipboard-check"></i></div>
+            <div>
+              <p class="tiny-label">Bước cuối</p>
+              <h3 class="section-title">Hoàn tất thông tin đơn hàng</h3>
+            </div>
+          </div>
 
-          <form @submit.prevent="handleSubmit">
-            <div class="mb-3">
-              <input
-                v-model="formData.email"
-                type="email"
-                class="form-control"
-                placeholder="Email"
-                required
-              />
+          <form class="glass-card" @submit.prevent="handleSubmit">
+            <div class="block">
+              <div class="block-title">
+                <span class="step-pill">1</span>
+                Thông tin liên hệ
+              </div>
+              <div class="row g-3">
+                <div class="col-12">
+                  <div class="input-shell">
+                    <i class="bi bi-envelope"></i>
+                    <input
+                      v-model="formData.email"
+                      type="email"
+                      class="form-control"
+                      placeholder="Email"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="input-shell">
+                    <i class="bi bi-person"></i>
+                    <input
+                      v-model="formData.ho"
+                      class="form-control"
+                      placeholder="Họ"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="input-shell">
+                    <i class="bi bi-person-badge"></i>
+                    <input
+                      v-model="formData.ten"
+                      class="form-control"
+                      placeholder="Tên"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="input-shell">
+                    <i class="bi bi-phone"></i>
+                    <input
+                      v-model="formData.dienThoai"
+                      class="form-control"
+                      placeholder="Điện thoại"
+                      :required="!isGoogleLogin"
+                    />
+                  </div>
+                  <small v-if="isGoogleLogin" class="text-muted">Có thể để trống nếu đăng nhập bằng Google</small>
+                </div>
+              </div>
             </div>
 
-            <h4 class="mt-4 mb-3">Giao hàng</h4>
-            <div class="mb-3">
+            <div class="block">
+              <div class="block-title">
+                <span class="step-pill">2</span>
+                Giao hàng
+              </div>
               <label class="form-label">Địa chỉ giao hàng</label>
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <div class="form-check">
+              <div class="pill-switch mb-3">
+                <label class="switch-option" :class="{ active: addressMode === 'saved' }">
                   <input
                     id="useSaved"
-                    class="form-check-input"
+                    class="d-none"
                     type="radio"
                     value="saved"
                     v-model="addressMode"
                     @change="onAddressModeChange"
                   />
-                  <label class="form-check-label" for="useSaved">Chọn địa chỉ đã lưu</label>
-                </div>
-                <div class="form-check">
+                  <span>Địa chỉ đã lưu</span>
+                </label>
+                <label class="switch-option" :class="{ active: addressMode === 'custom' }">
                   <input
                     id="useCustom"
-                    class="form-check-input"
+                    class="d-none"
                     type="radio"
                     value="custom"
                     v-model="addressMode"
                     @change="onAddressModeChange"
                   />
-                  <label class="form-check-label" for="useCustom">Nhập địa chỉ mới</label>
-                </div>
+                  <span>Nhập địa chỉ mới</span>
+                </label>
               </div>
 
-              <div v-if="addressMode === 'saved' && addresses.length" class="mb-2">
-                <select v-model="selectedAddressId" class="form-select" @change="onAddressSelect">
+              <div v-if="addressMode === 'saved' && addresses.length" class="mb-3">
+                <select v-model="selectedAddressId" class="form-select fancy-select" @change="onAddressSelect">
                   <option v-for="addr in addresses" :key="addr.maDiaChi" :value="addr.maDiaChi">
                     {{ formatAddress(addr) }}{{ addr.macDinh ? ' (Mặc định)' : '' }}{{ addr.isHistory ? ' (Đã dùng trước đó)' : '' }}
                   </option>
                 </select>
-                <div v-if="selectedAddressId" class="mt-2 p-3 bg-light rounded border">
+                <div v-if="selectedAddressId" class="selected-box">
                   <small class="text-muted d-block mb-1">Địa chỉ đã chọn:</small>
                   <div class="fw-semibold">{{ getSelectedAddressText() }}</div>
                 </div>
               </div>
 
               <div v-if="addressMode === 'custom'" class="mt-2">
-                <textarea
-                  v-model="formData.diaChi"
-                  class="form-control"
-                  rows="2"
-                  placeholder="Nhập địa chỉ giao hàng (Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành)"
-                  required
-                ></textarea>
+                <div class="input-shell textarea-shell">
+                  <i class="bi bi-geo-alt"></i>
+                  <textarea
+                    v-model="formData.diaChi"
+                    class="form-control"
+                    rows="2"
+                    placeholder="Nhập địa chỉ giao hàng (Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành)"
+                    required
+                  ></textarea>
+                </div>
               </div>
             </div>
 
-            <div class="row g-2">
-              <div class="col-md-6">
-                <input
-                  v-model="formData.ho"
-                  class="form-control"
-                  placeholder="Họ"
-                  required
-                />
+            <div class="block">
+              <div class="block-title">
+                <span class="step-pill">3</span>
+                Vận chuyển & Thanh toán
               </div>
-              <div class="col-md-6">
-                <input
-                  v-model="formData.ten"
-                  class="form-control"
-                  placeholder="Tên"
-                  required
-                />
+              <div class="option-card">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="ship"
+                      id="shipFree"
+                      checked
+                    />
+                    <label class="form-check-label" for="shipFree">FREE SHIP</label>
+                  </div>
+                  <span class="badge-free">Miễn phí</span>
+                </div>
               </div>
-              <!-- <div class="col-12">
-                <input
-                  v-model="formData.diaChi"
-                  class="form-control"
-                  placeholder="Địa chỉ (Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành, mã bưu chính)"
-                  required
-                />
-              </div> -->
-              <div class="col-md-6">
-                <input
-                  v-model="formData.dienThoai"
-                  class="form-control"
-                  placeholder="Điện thoại"
-                  :required="!isGoogleLogin"
-                />
-                <small v-if="isGoogleLogin" class="text-muted">Có thể để trống nếu đăng nhập bằng Google</small>
-              </div>
-            </div>
 
-            <div class="mt-4">
-              <h4 class="mb-3">Phương thức vận chuyển</h4>
-              <div class="form-check border rounded-3 p-3 border-muted shadow-s">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  name="ship"
-                  id="shipFree"
-                  checked
-                />
-                <label class="form-check-label w-100 d-flex justify-content-between" for="shipFree">
-                  <span>FREE SHIP</span>
-                  <span class="fw-semibold">MIỄN PHÍ</span>
-                </label>
+              <div class="option-card mt-2" :class="{ active: formData.payment === 'COD' }">
+                <div class="d-flex align-items-start gap-2">
+                  <input
+                    class="form-check-input mt-1"
+                    type="radio"
+                    name="payment"
+                    id="cod"
+                    value="COD"
+                    v-model="formData.payment"
+                    checked
+                  />
+                  <label class="form-check-label w-100" for="cod">
+                    <div class="fw-semibold">Thanh toán khi nhận hàng (COD)</div>
+                    <div class="small muted">Trả tiền cho đơn vị vận chuyển khi nhận hàng.</div>
+                  </label>
+                </div>
               </div>
-            </div>
+              <div class="option-card mt-2 disabled-card">
+                <div class="d-flex align-items-start gap-2">
+                  <input
+                    class="form-check-input mt-1"
+                    type="radio"
+                    name="payment"
+                    id="bank"
+                    value="BANK"
+                    v-model="formData.payment"
+                    disabled
+                  />
+                  <label class="form-check-label text-muted" for="bank">
+                    <div class="fw-semibold">Chuyển khoản ngân hàng</div>
+                    <div class="small text-muted">Đang phát triển</div>
+                  </label>
+                </div>
+              </div>
 
-            <div class="mt-4">
-              <h4 class="mb-3">Thanh toán</h4>
-              <div class="form-check border rounded-3 p-3 border-muted mb-2">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  name="payment"
-                  id="cod"
-                  value="COD"
-                  v-model="formData.payment"
-                  checked
-                />
-                <label class="form-check-label w-100" for="cod">
-                  <span class="fw-semibold">Thanh toán khi nhận hàng (COD)</span>
-                  <div class="small muted">Trả tiền cho đơn vị vận chuyển khi nhận hàng.</div>
-                </label>
-              </div>
-              <div class="form-check border rounded-3 p-3 border-muted bg-light">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  name="payment"
-                  id="bank"
-                  value="BANK"
-                  v-model="formData.payment"
-                  disabled
-                />
-                <label class="form-check-label text-muted" for="bank">
-                  <span class="fw-semibold">Chuyển khoản ngân hàng</span>
-                  <div class="small text-muted">Đang phát triển</div>
-                </label>
-              </div>
-            </div>
-
-            <div class="mt-4">
-              <div class="form-check border rounded-3 p-3 border-muted">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  id="sameaddr"
-                  v-model="formData.sameAddress"
-                  checked
-                />
-                <label class="form-check-label" for="sameaddr">Địa chỉ thanh toán giống địa chỉ giao hàng</label>
-              </div>
-              
-              <div v-if="!formData.sameAddress" class="mt-3">
-                <label class="form-label fw-semibold">Địa chỉ thanh toán</label>
-                <input
-                  v-model="formData.diaChiThanhToan"
-                  type="text"
-                  class="form-control"
-                  placeholder="Nhập địa chỉ thanh toán (Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành)"
-                  :required="!formData.sameAddress"
-                />
+              <div class="mt-3">
+                <div class="option-card" :class="{ active: formData.sameAddress }">
+                  <div class="d-flex align-items-center gap-2">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      id="sameaddr"
+                      v-model="formData.sameAddress"
+                      checked
+                    />
+                    <label class="form-check-label" for="sameaddr">Địa chỉ thanh toán giống địa chỉ giao hàng</label>
+                  </div>
+                </div>
+                
+                <div v-if="!formData.sameAddress" class="mt-3">
+                  <label class="form-label fw-semibold">Địa chỉ thanh toán</label>
+                  <div class="input-shell">
+                    <i class="bi bi-house"></i>
+                    <input
+                      v-model="formData.diaChiThanhToan"
+                      type="text"
+                      class="form-control"
+                      placeholder="Nhập địa chỉ thanh toán (Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành)"
+                      :required="!formData.sameAddress"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
             <div class="mt-4 d-grid">
-              <button class="btn btn-danger btn-lg fw-bold" type="submit" :disabled="submitting">
+              <button class="primary-btn w-100" type="submit" :disabled="submitting">
                 <i class="bi bi-bag-check me-2"></i>
                 <span v-if="submitting">Đang xử lý...</span>
                 <span v-else>Đặt hàng</span>
               </button>
             </div>
 
-            <div class="mt-3 tiny">
-              <a class="text-decoration-none" href="javascript:history.back()">
+            <div class="mt-3 tiny text-center">
+              <a class="link-muted" href="javascript:history.back()">
                 <i class="bi bi-arrow-left-short"></i> Quay lại
               </a>
               <span class="mx-2">•</span>
-              <RouterLink class="text-decoration-none" to="/">Tiếp tục mua sắm</RouterLink>
+              <RouterLink class="link-accent" to="/">Tiếp tục mua sắm</RouterLink>
             </div>
           </form>
         </div>
 
         <!-- =================== SUMMARY =================== -->
         <div class="col-lg-5">
-          <div class="border rounded-3 p-3 border-muted shadow-s">
-            <h4 class="mb-3">Đơn hàng</h4>
-
-            <div v-if="!cartItems.length" class="alert alert-warning py-2">
-              Giỏ hàng trống. <RouterLink to="/" class="alert-link">Quay lại mua sắm</RouterLink>.
+          <div class="glass-card summary-card">
+            <div class="section-head d-flex align-items-center gap-2 mb-3">
+              <div class="icon-circle sm"><i class="bi bi-receipt"></i></div>
+              <h5 class="m-0">Đơn hàng</h5>
             </div>
 
-            <div v-else>
+            <div v-if="!cartItems.length" class="alert alert-warning modern-alert warn py-2">
+              Giỏ hàng trống. <RouterLink to="/" class="link-accent">Quay lại mua sắm</RouterLink>.
+            </div>
+
+            <div v-else class="stagger-list">
               <div
                 v-for="item in cartItems"
                 :key="item.maGH || item.id"
-                class="d-flex align-items-center justify-content-between mb-3"
+                class="summary-item"
               >
                 <div class="d-flex align-items-center gap-2">
-                  <img
-                    class="summary-img"
-                    :src="getImageUrl(item.sanPham?.hinhAnh || item.hinhAnh)"
-                    :alt="item.sanPham?.tenSP || item.tenSP"
-                  />
-                  <div>
+                  <div class="thumb">
+                    <img
+                      :src="getImageUrl(item.sanPham?.hinhAnh || item.hinhAnh)"
+                      :alt="item.sanPham?.tenSP || item.tenSP"
+                    />
+                  </div>
+                  <div class="text-truncate">
                     <div class="small fw-semibold text-truncate" style="max-width: 260px">
                       {{ item.sanPham?.tenSP || item.tenSP }}
                     </div>
@@ -238,7 +274,7 @@
             </div>
             <div class="d-flex justify-content-between">
               <span class="muted">Vận chuyển</span>
-              <span class="fw-semibold">MIỄN PHÍ</span>
+              <span class="fw-semibold text-success">MIỄN PHÍ</span>
             </div>
             <hr />
             <div class="d-flex justify-content-between align-items-center">
@@ -605,37 +641,339 @@ onMounted(loadData)
 </script>
 
 <style scoped>
-:root {
-  --brand: #dc3545;
+.checkout-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at 12% 18%, rgba(230, 244, 255, 0.55), transparent 25%),
+    radial-gradient(circle at 90% 10%, rgba(255, 231, 231, 0.55), transparent 22%),
+    linear-gradient(135deg, #f8fafc 0%, #f5f7fa 70%, #eef2f7 100%);
+  padding: 48px 0 64px;
 }
-.brand {
-  color: var(--brand);
-}
-.btn-brand {
-  background: var(--brand);
-  color: #fff;
-}
-.btn-brand:hover {
-  filter: brightness(0.95);
-  color: #fff;
-}
-.border-muted {
-  border-color: #e5e7eb !important;
-}
-.shadow-s {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-}
-.summary-img {
+
+.section-head .icon-circle {
   width: 48px;
   height: 48px;
-  object-fit: cover;
-  border-radius: 0.5rem;
-  border: 1px solid #eee;
 }
-.muted {
+
+.section-title {
+  margin: 0;
+  font-weight: 700;
+  color: #111827;
+}
+
+.icon-circle {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffe9ec, #fff);
+  color: #e63946;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  box-shadow: 0 10px 30px rgba(230, 57, 70, 0.18);
+}
+
+.icon-circle.sm {
+  width: 38px;
+  height: 38px;
+  font-size: 17px;
+}
+
+.tiny-label {
+  text-transform: uppercase;
+  color: #9ca3af;
+  letter-spacing: 0.5px;
+  font-size: 12px;
+  margin: 0;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 30px 80px rgba(17, 24, 39, 0.08), 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  animation: fadeUp 0.6s ease both;
+}
+
+.summary-card {
+  position: sticky;
+  top: 18px;
+}
+
+.block {
+  border: 1px solid #eef2f7;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.03);
+}
+
+.block-title {
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.step-pill {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  background: #ffe9ec;
+  color: #e63946;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.input-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  transition: all 0.25s ease;
+}
+
+.input-shell i {
+  color: #9ca3af;
+  font-size: 16px;
+}
+
+.input-shell:focus-within {
+  background: #fff;
+  border-color: rgba(230, 57, 70, 0.45);
+  box-shadow: 0 8px 26px rgba(230, 57, 70, 0.12);
+}
+
+.input-shell .form-control {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-weight: 600;
+  color: #111827;
+  box-shadow: none;
+}
+
+.input-shell .form-control::placeholder {
+  color: #b5becd;
+  font-weight: 500;
+}
+
+.textarea-shell .form-control {
+  resize: none;
+  min-height: 80px;
+}
+
+.pill-switch {
+  display: inline-flex;
+  gap: 10px;
+  background: #f3f4f6;
+  padding: 6px;
+  border-radius: 12px;
+}
+
+.switch-option {
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
   color: #6b7280;
+  transition: all 0.2s ease;
 }
+
+.switch-option.active {
+  background: #fff;
+  color: #e63946;
+  box-shadow: 0 10px 24px rgba(230, 57, 70, 0.08);
+  border: 1px solid rgba(230, 57, 70, 0.18);
+}
+
+.fancy-select {
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.selected-box {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f9fafb;
+  border: 1px dashed rgba(230, 57, 70, 0.25);
+}
+
+.option-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+.option-card.active {
+  border-color: rgba(230, 57, 70, 0.4);
+  box-shadow: 0 12px 24px rgba(230, 57, 70, 0.08);
+}
+
+.option-card.disabled-card {
+  opacity: 0.6;
+  background: #f3f4f6;
+}
+
+.badge-free {
+  background: #ecfdf3;
+  color: #15803d;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-weight: 700;
+}
+
+.primary-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #f25561, #e63946);
+  color: #fff;
+  box-shadow: 0 16px 32px rgba(230, 57, 70, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.25s ease, filter 0.2s ease;
+}
+
+.primary-btn:hover:not(:disabled) {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 18px 36px rgba(230, 57, 70, 0.45);
+  filter: brightness(1.03);
+}
+
+.primary-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 10px 24px rgba(230, 57, 70, 0.3);
+}
+
+.primary-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .tiny {
-  font-size: 0.875rem;
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.link-accent {
+  color: #e63946;
+  font-weight: 700;
+  text-decoration: none;
+  position: relative;
+}
+
+.link-accent::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(226, 57, 70, 0.8), rgba(242, 85, 97, 0.5));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+
+.link-accent:hover::after {
+  transform: scaleX(1);
+}
+
+.link-muted {
+  color: #6b7280;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link-muted:hover {
+  color: #111827;
+}
+
+.muted {
+  color: #6c757d;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.summary-item:last-child {
+  border-bottom: none;
+}
+
+.thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: #f5f7fa;
+  border: 1px solid #eef2f7;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.stagger-list {
+  animation: fadeUp 0.6s ease both;
+}
+
+.modern-alert {
+  border-radius: 12px;
+  border: none;
+  padding: 12px 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  background: #fff6f6;
+  color: #c53030;
+}
+
+.modern-alert.warn {
+  background: #fff8eb;
+  color: #b45309;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .checkout-page {
+    padding: 32px 0 48px;
+  }
+
+  .glass-card {
+    padding: 18px;
+  }
 }
 </style>
